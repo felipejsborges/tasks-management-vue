@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { watchEffect, ref } from 'vue';
 
+import api from '@/api'
+
 interface Task {
   id: number
   title: string
@@ -9,14 +11,16 @@ interface Task {
   completed_at: Date
 }
 
-const taskList = ref<Task[]>([])
+const tasks = ref<Task[]>([])
 
 watchEffect(async () => {
-  const response = await fetch(
-    `http://127.0.0.1:8000/api/tasks`
-  )
-  const responseJson = await response.json()
-  taskList.value = responseJson.results
+  const { data } = await api.get('/tasks', {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  })
+
+  tasks.value = data.results
 })
 </script>
 
@@ -39,12 +43,12 @@ watchEffect(async () => {
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <tr v-for="(item) in tasks" :key="item.id">
             <td>
-              <input type="checkbox" checked />
+              <input type="checkbox" :checked="!!item.completed_at" />
             </td>
-            <td>Task 1</td>
-            <td>2</td>
+            <td>{{ item.title }}</td>
+            <td>{{ item.effort }}</td>
             <td>
               <div class="options">
                 <button>Edit</button>
