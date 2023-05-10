@@ -1,0 +1,58 @@
+@import './base.css';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  position: relative;
+  font-weight: normal;
+}
+
+:focus {
+  outline: none;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--color-background);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+body,
+input,
+textarea,
+span,
+button,
+label {
+  font-family: 'Helvetica', sans-serif;
+  font-weight: normal;
+  font-size: 1rem;
+  line-height: 130%;
+  color: black;
+}
+
+button,
+a {
+  outline: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+
+  transition: all 200ms;
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+@media (max-width: 1000px) {
+  body,
+  input,
+  textarea,
+  span,
+  button {
+    font-size: 87.5%;
+  }
+}
