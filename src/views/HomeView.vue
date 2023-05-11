@@ -2,6 +2,7 @@
 import { watchEffect, ref } from 'vue';
 
 import api from '@/api'
+import { debounce } from '@/utils/debounce'
 
 interface Task {
   id: number
@@ -13,21 +14,31 @@ interface Task {
 
 const tasks = ref<Task[]>([])
 
-watchEffect(async () => {
-  const { data } = await api.get('/tasks', {
+const search = ref('')
+
+async function fetch(search = "") {
+  const { data } = await api.get(`/tasks?search=${search}`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('token')}`,
     },
   })
 
   tasks.value = data.results
+}
+
+const debouncedFetch = debounce((search: string) => {
+  fetch(search)
+}, 500);
+
+watchEffect(() => {
+  debouncedFetch(search.value)
 })
 </script>
 
 <template>
   <div class="container">
     <header>
-      <input id="search" placeholder="Search for a task title..." />
+      <input id="search" placeholder="Search for a task title..." v-model="search" />
       <label for="search">Search</label>
       <button>Create</button>
     </header>
