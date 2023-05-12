@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { watchEffect, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
 import api from '@/api'
 import { debounce } from '@/utils/debounce'
@@ -11,6 +12,8 @@ interface Task {
   effort: number
   completed_at: Date
 }
+
+const router = useRouter()
 
 const tasks = ref<Task[]>([])
 const totalTasks = ref<number>(0)
@@ -61,6 +64,10 @@ function orderBy(field: string) {
   fieldToOrderBy.value = field
 }
 
+function goToCreateTask() {
+  router.push({ name: 'tasks-form' })
+}
+
 watchEffect(() => {
   debouncedFetch(search.value)
 })
@@ -75,7 +82,7 @@ watch([currentPage, fieldToOrderBy], async () => {
     <header>
       <input id="search" placeholder="Search for a task title..." v-model="search" />
       <label for="search">Search</label>
-      <button>Create</button>
+      <button @click="goToCreateTask">Create</button>
     </header>
 
     <main>
@@ -114,7 +121,7 @@ watch([currentPage, fieldToOrderBy], async () => {
   </div>
 </template>
 
-<style>
+<style scoped>
 .container {
   max-width: 1400px;
   width: 100%;
