@@ -13,21 +13,34 @@ interface Task {
 }
 
 const tasks = ref<Task[]>([])
+const totalTasks = ref<number>(0)
+const nextPage = ref<string | null>(null)
+const previousPage = ref<string | null>(null)
 
 const search = ref('')
 
-async function fetch(search = "") {
-  const { data } = await api.get(`/tasks?search=${search}`, {
+async function fetch(search = "", pageUrl: string | null) {
+  let routePath = `/tasks?search=${search}`
+
+  if (pageUrl && pageUrl.includes("page=")) {
+    const page = pageUrl.split("page=")[1].split("&")[0]
+    routePath += `&page=${page}`
+  }
+
+  const { data } = await api.get(routePath, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('token')}`,
     },
   })
 
   tasks.value = data.results
+  totalTasks.value = data.count
+  nextPage.value = data.next
+  previousPage.value = data.previous
 }
 
 const debouncedFetch = debounce((search: string) => {
-  fetch(search)
+  fetch(search, null)
 }, 500);
 
 watchEffect(() => {
@@ -72,7 +85,9 @@ watchEffect(() => {
     </main>
 
     <footer>
-      TODO: pagination
+      <button :disabled="!previousPage" @click="fetch(search, previousPage)">Previous</button>
+      <button :disabled="!nextPage" @click="fetch(search, nextPage)">Next</button>
+      <span>Total: {{ totalTasks }}</span>
     </footer>
   </div>
 </template>
@@ -141,6 +156,13 @@ td {
 
 .options {
   display: flex;
+  justify-content: flex-end;
+}
+
+footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   justify-content: flex-end;
 }
 </style>
