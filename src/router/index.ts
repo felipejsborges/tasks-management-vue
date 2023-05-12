@@ -12,7 +12,7 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/tasks-form',
+      path: '/tasks-form/:id?',
       name: 'tasks-form',
       component: TasksFormView
     },

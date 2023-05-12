@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router';
 
 import api from '@/api'
 
 const router = useRouter()
+const { params } = useRoute()
 
 const title = ref('')
 const description = ref('')
 const effort = ref(0)
 
-async function handleSubmit() {
+async function createTask() {
 	await api.post('/tasks', {
 		title: title.value,
 		description: description.value,
@@ -20,9 +21,43 @@ async function handleSubmit() {
 			Authorization: `Bearer ${localStorage.getItem('token')}`,
 		},
 	})
+}
+
+async function updateTask() {
+	await api.put(`/tasks/${params.id}`, {
+		title: title.value,
+		description: description.value,
+		effort: effort.value,
+	}, {
+		headers: {
+			Authorization: `Bearer ${localStorage.getItem('token')}`,
+		},
+	})
+}
+
+async function handleSubmit() {
+	if (!params.id) {
+		await createTask()
+		return
+	}
+	await updateTask()
 
 	router.push({ name: 'home' })
 }
+
+onMounted(async () => {
+	if (!params.id) return
+
+	const { data } = await api.get(`/tasks/${params.id}`, {
+		headers: {
+			Authorization: `Bearer ${localStorage.getItem('token')}`,
+		},
+	})
+
+	title.value = data.title
+	description.value = data.description
+	effort.value = data.effort
+})
 
 </script>
 

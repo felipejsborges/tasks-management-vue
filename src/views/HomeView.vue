@@ -68,6 +68,10 @@ function goToCreateTask() {
   router.push({ name: 'tasks-form' })
 }
 
+function handleEditTask(taskId: number) {
+  router.push({ name: 'tasks-form', params: { id: taskId } })
+}
+
 watchEffect(() => {
   debouncedFetch(search.value)
 })
@@ -104,7 +108,7 @@ watch([currentPage, fieldToOrderBy], async () => {
             <td>{{ item.effort }}</td>
             <td>
               <div class="options">
-                <button>Edit</button>
+                <button @click="handleEditTask(item.id)">Edit</button>
                 <button>Delete</button>
               </div>
             </td>
