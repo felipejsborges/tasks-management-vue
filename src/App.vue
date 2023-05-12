@@ -10,8 +10,9 @@ import Navbar from '@/components/Navbar.vue';
   </main>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .content {
+  background: $background;
   padding: 8rem 16rem;
   width: 100%;
   display: flex;
