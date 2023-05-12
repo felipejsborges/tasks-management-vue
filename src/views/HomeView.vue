@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watchEffect, ref } from 'vue';
+import { watchEffect, ref, watch } from 'vue';
 
 import api from '@/api'
 import { debounce } from '@/utils/debounce'
@@ -17,14 +17,16 @@ const totalTasks = ref<number>(0)
 const nextPage = ref<string | null>(null)
 const previousPage = ref<string | null>(null)
 
+const currentPage = ref<number>(1)
+const fieldToOrderBy = ref<string | null>(null)
+
 const search = ref('')
 
-async function fetch(search = "", pageUrl: string | null) {
-  let routePath = `/tasks?search=${search}`
+async function fetch(search = "") {
+  let routePath = `/tasks?search=${search}&page=${currentPage.value}`
 
-  if (pageUrl && pageUrl.includes("page=")) {
-    const page = pageUrl.split("page=")[1].split("&")[0]
-    routePath += `&page=${page}`
+  if (fieldToOrderBy.value) {
+    routePath += `&ordering=${fieldToOrderBy.value}`
   }
 
   const { data } = await api.get(routePath, {
@@ -40,11 +42,31 @@ async function fetch(search = "", pageUrl: string | null) {
 }
 
 const debouncedFetch = debounce((search: string) => {
-  fetch(search, null)
+  fetch(search)
 }, 500);
+
+function changePage(pageUrl: string | null) {
+  if (pageUrl && pageUrl.includes("page=")) {
+    currentPage.value = Number(pageUrl.split("page=")[1].split("&")[0])
+    return
+  }
+  currentPage.value = 1
+}
+
+function orderBy(field: string) {
+  if (fieldToOrderBy.value === field) {
+    fieldToOrderBy.value = `-${field}`
+    return
+  }
+  fieldToOrderBy.value = field
+}
 
 watchEffect(() => {
   debouncedFetch(search.value)
+})
+
+watch([currentPage, fieldToOrderBy], async () => {
+  fetch(search.value)
 })
 </script>
 
@@ -60,9 +82,9 @@ watchEffect(() => {
       <table>
         <thead>
           <tr>
-            <th>Completed</th>
-            <th>Title</th>
-            <th>Effort</th>
+            <th @click="orderBy('completed_at')">Completed</th>
+            <th @click="orderBy('title')">Title</th>
+            <th @click="orderBy('effort')">Effort</th>
             <th>Options</th>
           </tr>
         </thead>
@@ -85,8 +107,8 @@ watchEffect(() => {
     </main>
 
     <footer>
-      <button :disabled="!previousPage" @click="fetch(search, previousPage)">Previous</button>
-      <button :disabled="!nextPage" @click="fetch(search, nextPage)">Next</button>
+      <button :disabled="!previousPage" @click="changePage(previousPage)">Previous</button>
+      <button :disabled="!nextPage" @click="changePage(nextPage)">Next</button>
       <span>Total: {{ totalTasks }}</span>
     </footer>
   </div>
