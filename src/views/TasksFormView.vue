@@ -38,9 +38,9 @@ async function updateTask() {
 async function handleSubmit() {
 	if (!params.id) {
 		await createTask()
-		return
+	} else {
+		await updateTask()
 	}
-	await updateTask()
 
 	router.push({ name: 'home' })
 }
