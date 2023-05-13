@@ -24,7 +24,10 @@ api.interceptors.response.use(
   },
   function (error) {
     // If token is not valid, redirect to login
-    if (error?.response?.data?.code === 'token_not_valid') {
+    const tokenIsMissingOrExpired =
+      error?.response?.data?.code === 'token_not_valid' ||
+      error?.response?.data?.detail === 'Authentication credentials were not provided.'
+    if (tokenIsMissingOrExpired) {
       localStorage.removeItem('token')
       window.location.href = '/login'
     }
