@@ -16,10 +16,6 @@ async function createTask() {
 		title: title.value,
 		description: description.value,
 		effort: effort.value,
-	}, {
-		headers: {
-			Authorization: `Bearer ${localStorage.getItem('token')}`,
-		},
 	})
 }
 
@@ -28,10 +24,6 @@ async function updateTask() {
 		title: title.value,
 		description: description.value,
 		effort: effort.value,
-	}, {
-		headers: {
-			Authorization: `Bearer ${localStorage.getItem('token')}`,
-		},
 	})
 }
 
@@ -48,11 +40,7 @@ async function handleSubmit() {
 onMounted(async () => {
 	if (!params.id) return
 
-	const { data } = await api.get(`/tasks/${params.id}`, {
-		headers: {
-			Authorization: `Bearer ${localStorage.getItem('token')}`,
-		},
-	})
+	const { data } = await api.get(`/tasks/${params.id}`)
 
 	title.value = data.title
 	description.value = data.description

@@ -35,11 +35,7 @@ async function fetch(search = "") {
     routePath += `&ordering=${fieldToOrderBy.value}`
   }
 
-  const { data } = await api.get(routePath, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
-    },
-  })
+  const { data } = await api.get(routePath)
 
   tasks.value = data.results
   totalTasks.value = data.count
@@ -72,11 +68,7 @@ function goToCreateTask() {
 }
 
 async function handleCompleteTask(taskId: number) {
-  await api.patch(`/tasks/${taskId}/complete`, {}, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
-    },
-  })
+  await api.patch(`/tasks/${taskId}/complete`, {})
 
   await fetch(search.value)
 }
@@ -91,11 +83,7 @@ function handleDeleteTask(taskId: number) {
 }
 
 async function handleConfirmDeletion() {
-  await api.delete(`/tasks/${taskToDelete.value}`, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
-    },
-  })
+  await api.delete(`/tasks/${taskToDelete.value}`)
 
   await fetch(search.value)
   showConfirmDeletionDialog.value = false
