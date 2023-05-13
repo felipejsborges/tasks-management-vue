@@ -71,6 +71,16 @@ function goToCreateTask() {
   router.push({ name: 'tasks-form' })
 }
 
+async function handleCompleteTask(taskId: number) {
+  await api.patch(`/tasks/${taskId}/complete`, {}, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  })
+
+  await fetch(search.value)
+}
+
 function handleEditTask(taskId: number) {
   router.push({ name: 'tasks-form', params: { id: taskId } })
 }
@@ -122,7 +132,7 @@ watch([currentPage, fieldToOrderBy], async () => {
         <tbody>
           <tr v-for="(item) in tasks" :key="item.id">
             <td>
-              <input type="checkbox" :checked="!!item.completed_at" />
+              <input type="checkbox" :checked="!!item.completed_at" @click="handleCompleteTask(item.id)" />
             </td>
             <td>{{ item.title }}</td>
             <td>{{ item.effort }}</td>
