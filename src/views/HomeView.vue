@@ -25,6 +25,9 @@ const fieldToOrderBy = ref<string | null>(null)
 
 const search = ref('')
 
+const showConfirmDeletionDialog = ref(false)
+const taskToDelete = ref<number | null>(null)
+
 async function fetch(search = "") {
   let routePath = `/tasks?search=${search}&page=${currentPage.value}`
 
@@ -72,6 +75,23 @@ function handleEditTask(taskId: number) {
   router.push({ name: 'tasks-form', params: { id: taskId } })
 }
 
+function handleDeleteTask(taskId: number) {
+  taskToDelete.value = taskId
+  showConfirmDeletionDialog.value = true
+}
+
+async function handleConfirmDeletion() {
+  await api.delete(`/tasks/${taskToDelete.value}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  })
+
+  await fetch(search.value)
+  showConfirmDeletionDialog.value = false
+  taskToDelete.value = null
+}
+
 watchEffect(() => {
   debouncedFetch(search.value)
 })
@@ -109,7 +129,7 @@ watch([currentPage, fieldToOrderBy], async () => {
             <td>
               <div class="options">
                 <button @click="handleEditTask(item.id)">Edit</button>
-                <button>Delete</button>
+                <button @click="handleDeleteTask(item.id)">Delete</button>
               </div>
             </td>
           </tr>
@@ -122,6 +142,20 @@ watch([currentPage, fieldToOrderBy], async () => {
       <button :disabled="!nextPage" @click="changePage(nextPage)">Next</button>
       <span>Total: {{ totalTasks }}</span>
     </footer>
+
+    <v-dialog v-model="showConfirmDeletionDialog" width="auto">
+      <v-card>
+        <v-card-text>
+          Are you sure you want to delete this task?
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" block @click="handleConfirmDeletion">Yes</v-btn>
+        </v-card-actions>
+        <v-card-actions>
+          <v-btn color="primary" block @click="showConfirmDeletionDialog = false">No</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
