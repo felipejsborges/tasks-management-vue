@@ -1,4 +1,4 @@
-@import './base.css';
+@import './_variables.scss';
 
 * {
   margin: 0;
@@ -14,8 +14,8 @@
 
 body {
   min-height: 100vh;
-  background: var(--color-background);
-  color: var(--color-text);
+  background: $background;
+  color: $text;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -25,11 +25,11 @@ textarea,
 span,
 button,
 label {
-  font-family: 'Helvetica', sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-weight: normal;
   font-size: 1rem;
   line-height: 130%;
-  color: black;
+  color: $text;
 }
 
 button,

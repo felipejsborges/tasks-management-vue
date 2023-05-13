@@ -36,19 +36,19 @@ async function login() {
 	</div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .container {
 	max-width: 1400px;
 	width: 100%;
-}
 
-form {
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
-}
+	form {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
 
-input {
-	background: gray;
+		input {
+			background: gray;
+		}
+	}
 }
 </style>

@@ -169,7 +169,7 @@ watch([currentPage, fieldToOrderBy], async () => {
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .container {
   max-width: 1400px;
   width: 100%;
